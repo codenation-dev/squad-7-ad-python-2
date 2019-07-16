@@ -8,6 +8,7 @@ class HelloWorld(Resource):
 
 
 commission_fields = {
+    'id': fields.Integer,
     'min_value': fields.Float(),
     'lower_percentage': fields.Float(),
     'upper_percentage': fields.Float()
@@ -32,6 +33,7 @@ parser_commission.add_argument(
 
 
 seller_fields = {
+    'id': fields.Integer,
     'name': fields.String,
     'address': fields.String,
     'phone': fields.String,
