@@ -8,11 +8,15 @@ from models.database import (
 )
 
 
-comission_fields = {
+comission_fields_post = {
+    'id': fields.Integer
+}
+
+comission_fields_get = {
     'id': fields.Integer,
-    # 'min_value': fields.Price(decimals=2),
-    # 'lower_percentage': fields.Float(),
-    # 'upper_percentage': fields.Float()
+    'min_value': fields.Price(decimals=2),
+    'lower_percentage': fields.Float(),
+    'upper_percentage': fields.Float()
 }
 
 parser_comission = reqparse.RequestParser(bundle_errors=True)
@@ -35,7 +39,7 @@ parser_comission.add_argument(
 
 class Comission(Resource):
 
-    @marshal_with(comission_fields)
+    @marshal_with(comission_fields_post)
     def post(self):
         args = parser_comission.parse_args()
         print(args)
@@ -49,7 +53,7 @@ class Comission(Resource):
         db.session.commit()
         return comission
 
-    @marshal_with(comission_fields)
+    @marshal_with(comission_fields_get)
     def get(self):
         comissions = ComissionModel().query.all()
         return comissions
@@ -108,7 +112,7 @@ class MonthComission(Resource):
         db.session.commit()
         return {'id': month_comission.id, 'comission': comission_of_seller}
 
-    @marshal_with(comission_fields)
+    @marshal_with(month_comission_fields)
     def get(self):
         comissions = ComissionModel().query.all()
         return comissions
@@ -144,15 +148,19 @@ class SellerComission(Resource):
         return comissions
 
 
-seller_fields = {
+seller_fields_post = {
+    'id': fields.Integer
+}
+
+seller_fields_get = {
     'id': fields.Integer,
-    # 'name': fields.String,
-    # 'address': fields.String,
-    # 'phone': fields.String,
-    # 'age': fields.Integer,
-    # 'email': fields.String,
-    # 'cpf': fields.String,
-    # 'comission_plan': fields.Integer
+    'name': fields.String,
+    'address': fields.String,
+    'phone': fields.String,
+    'age': fields.Integer,
+    'email': fields.String,
+    'cpf': fields.String,
+    'comission_plan': fields.Integer
 }
 
 parser_seller = reqparse.RequestParser(bundle_errors=True)
@@ -199,7 +207,7 @@ parser_seller.add_argument(
 
 class Seller(Resource):
 
-    @marshal_with(seller_fields)
+    @marshal_with(seller_fields_post)
     def post(self):
         args = parser_seller.parse_args()
         seller = SellerModel(
@@ -215,7 +223,7 @@ class Seller(Resource):
         db.session.commit()
         return seller
 
-    @marshal_with(seller_fields)
+    @marshal_with(seller_fields_get)
     def get(self):
         sellers = SellerModel().query.all()
         return sellers
