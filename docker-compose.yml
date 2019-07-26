@@ -23,7 +23,7 @@ services:
             - USER=root
             - PASS=admin
             - DB_HOST=mysqldb
-            - DATABASE=todo
+            - DATABASE=desafio
             - FLASK_ENV=development
         depends_on: 
             - mysqldb
