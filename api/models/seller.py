@@ -4,7 +4,7 @@ from sqlalchemy import (
     Integer,
     Column
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 
 from models.base import db
 from models.basic_controller import BasicController
@@ -21,7 +21,10 @@ class SellerModel(db.Model, BasicController):
     age = Column(Integer, nullable=False)
     email = Column(String(100), nullable=False)
     cpf = Column(String(11), nullable=False)
-    commission_plan = Column(Integer, ForeignKey(
-        'commission.id'), nullable=False)
+    comission_plan = Column(Integer, ForeignKey(
+        'comission.id'), nullable=False)
 
-    commission = relationship('CommissionModel')
+    comission = relationship(
+        'ComissionModel',
+        backref=backref('seller', uselist=False)
+    )

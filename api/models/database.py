@@ -1,7 +1,9 @@
 from models.base import db
-from models.commission import CommissionModel
-from models.month_commission import MonthCommissionModel
+from models.comission import ComissionModel
+from models.month_comission import MonthComissionModel
 from models.seller import SellerModel
+from models.seller_comission import SellerComissionModel
+
 
 def create_db():
     from sqlalchemy import create_engine
