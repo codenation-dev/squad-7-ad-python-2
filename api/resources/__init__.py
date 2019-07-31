@@ -1,4 +1,7 @@
 from flask_restful import Resource, Api, reqparse, fields, marshal_with
+from flask_mail import Message
+from .base_email import mail
+
 from models.database import (
     db,
     ComissionModel,
@@ -227,6 +230,65 @@ class Seller(Resource):
     def get(self):
         sellers = SellerModel().query.all()
         return sellers
+    
+
+notification_fields_get = {
+    'should_notify': fields.Boolean()
+}
+
+parse_notification = reqparse.RequestParser()
+parse_notification.add_argument('seller',
+                                type=int,
+                                required=True,
+                                help='Seller is required')
+parse_notification.add_argument('amount',
+                                type=float,
+                                required=True,
+                                help='Amount is required')
+
+class Notification(Resource):
+
+    def _send_email(self, seller):
+        subject = f""" Notícia de Vendas """
+        body = f"""
+            Olá {seller.name},
+            verificamos que suas vendas estão abaixo da média."""
+
+        msg = Message(body=body, subject=subject, recipients=[seller.email])
+
+        mail.send(msg)
+
+
+    def _average_comission(self, seller_sales):
+
+        if not seller_sales:
+            return 0
+
+        sorted_sales = sorted(seller_sales, key=lambda s: s.amount)
+
+        sales_amount_sum = 0
+        mean_count = 0
+
+        for i, sale in enumerate(sorted_sales, 1):
+            sales_amount_sum += sale.amount * i
+            mean_count += i
+
+        return sales_amount_sum / mean_count 
+ 
+
+    @marshal_with(notification_fields_get)
+    def get(self):
+        args = parse_notification.parse_args()
+        amount = args['amount']
+        seller_id = args['seller']
+        seller_comission = MonthComissionModel().query.filter_by(seller=seller_id).all()
+        average = _average_comission(seller_comission)
+
+        if amount < average:
+            _send_email(seller_id)  
+
+        return {'should_notify': True}  
+
 
 
 def set_resources_in_app(app):
@@ -236,3 +298,4 @@ def set_resources_in_app(app):
     api.add_resource(Comission, '/comissions')
     api.add_resource(MonthComission, '/month_comission')
     api.add_resource(SellerComission, '/seller_comission')
+    api.add_resource(Notification, '/check_comission')
