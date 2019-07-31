@@ -8,4 +8,4 @@
  * /check_comission
 
  ## Execution
-    ```docker-compose up```
+    docker-compose up
